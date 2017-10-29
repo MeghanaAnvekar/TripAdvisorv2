@@ -37,10 +37,8 @@ import static com.example.meghana.tripadvisorv2.R.id.poi;
 public class MainActivity extends AppCompatActivity {
     RecyclerView poi;
 
-    ArrayAdapter<place> adapter;
+    RecyclerView.Adapter adapter;
     ArrayList<place> place_list;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,32 +47,27 @@ public class MainActivity extends AppCompatActivity {
 
         poi = (RecyclerView) findViewById(R.id.poi);
         poi.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        poi.setLayoutManager(llm);
+        poi.setLayoutManager(new LinearLayoutManager(this));
 
-        place_list = new ArrayList<place>();
         GetData task = new GetData();
         task.execute();
         poi.setAdapter(new placeAdapter(this,place_list));
 
-       /* adapter = new ArrayAdapter<place>(
-                MainActivity.this,
-                android.R.layout.simple_gallery_item,
-                place_list
-        );
+        adapter = new placeAdapter(this,place_list);
 
-       // poi.setAdapter(adapter);*/
+        poi.setAdapter(adapter);
 
     }
 
 
     @SuppressLint("NewApi")
-    public class GetData extends AsyncTask<Void, Void, Void> {
+    public class GetData extends AsyncTask<Void, Void, Void>
+    {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            place_list = new ArrayList<place>();
            // poi = new RecyclerView(MainActivity.this);
 
         }
@@ -181,89 +174,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class placeAdapter extends RecyclerView.Adapter<placeAdapter.placeViewHolder> {
-
-        private List<place> placeList;
-
-        public placeAdapter(MainActivity mainActivity, List<place> list) {
-            this.placeList = list;
-        }
-
-        @Override
-        public int getItemCount() {
-            return placeList.size();
-        }
-
-        @Override
-        public void onBindViewHolder(placeViewHolder d, int i) {
-            place ci = placeList.get(i);
-            d.title.setText(ci.getTitle());
-            d.description.setText(ci.getDescription());
-            d.img_src = ci.getImg_src();
-            d.link = ci.getLink();
-
-            URL url = null;
-            try {
-                url = new URL(d.img_src);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            HttpURLConnection connection = null;
-            try {
-                connection = (HttpURLConnection) url.openConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            connection.setDoInput(true);
-            try {
-                connection.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            InputStream input = null;
-            try {
-                input = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-
-            d.img.setImageBitmap(myBitmap);
-
-
-
-        }
-
-        @Override
-        public placeViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View itemView = LayoutInflater.
-                    from(viewGroup.getContext()).
-                    inflate(R.layout.list_item_places, viewGroup, false);
-
-            return new placeViewHolder(itemView);
-        }
-
-        public  class placeViewHolder extends RecyclerView.ViewHolder {
-            protected TextView title;
-            protected TextView description;
-            protected ImageView img;
-            public String img_src;
-            public String link;
-
-
-            public placeViewHolder(View v) {
-                super(v);
-                title = (TextView) v.findViewById(R.id.title);
-                description = (TextView) v.findViewById(R.id.description);
-                img = (ImageView) v.findViewById(R.id.img);
-
-            }
-
-        }
-
-        }
-
 
 
 
 }
+

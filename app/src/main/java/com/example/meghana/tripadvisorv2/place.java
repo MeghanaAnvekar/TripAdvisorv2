@@ -19,7 +19,7 @@ public class place {
         this.link = link;
     }
 
-    public String getTitle()
+    public String getTitleValue()
     {
         return title;
     }
